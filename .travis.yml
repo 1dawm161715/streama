@@ -10,5 +10,3 @@ language: groovy
 
 jdk:
   - oraclejdk7
-
-script: gradle check

@@ -1,9 +1,9 @@
 FROM java:8-jre
 
-ADD build/libs/ /app
+ADD build/libs/*.war /app/streama.war
 
 WORKDIR /app
 
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-Dgrails.env=production-no-mysql", "-jar", "streama.war"]
+CMD ["-Dgrails.env=test", "-jar", "streama.war"]
