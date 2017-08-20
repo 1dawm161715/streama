@@ -6,7 +6,10 @@ sudo: required
 
 language: groovy
 
-#services: docker
+services: docker
 
-jdk:
-  - oraclejdk7
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker build -t gkiko/streama:travis-test .
+  - docker images
+  - docker push gkiko/streama:travis-test
