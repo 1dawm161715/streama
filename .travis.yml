@@ -10,8 +10,5 @@ language: groovy
 
 #services: docker
 
-after_success:
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker build -t gkiko/streama:travis-test .
-  - docker images
-  - docker push gkiko/streama:travis-test
+jdk:
+  - oraclejdk7
