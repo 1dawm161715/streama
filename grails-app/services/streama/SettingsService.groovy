@@ -12,6 +12,35 @@ class SettingsService {
     return Settings.findBySettingsKey('Base URL')?.value
   }
 
+  Boolean getAnonymousAccess() {
+    return Boolean.valueOf(Settings.findByName('anonymous_access')?.value)
+  }
+
+  def enableAnonymousUser() {
+    User anonymous = User.findByUsername("anonymous")
+    if (anonymous) {
+        anonymous.enabled = true
+        anonymous.deleted = false   /** If user has been previously mark as deleted, clear the field **/
+    } else {  /** If the user not exists, or has been deleted, create it **/
+        anonymous = new User(username: 'anonymous', password: 'anonymous', fullName: 'Anonymous', enabled: true)
+    }
+    anonymous.save failOnError: true
+  }
+
+  def changeAnonymousAccess(String value) {
+    Settings setting = Settings.findByName("anonymous_access" )
+    setting.value = value
+    setting.save failOnError: true
+  }
+
+  def disableAnonymousUser() {
+    /** Delete the user of the database */
+    User anonymous = User.findByUsername("anonymous")
+    if (anonymous) {
+      anonymous.delete failOnError: true
+    }
+  }
+
   def validate(Settings settingsInstance) {
     def resultValue = [:]
 
@@ -32,6 +61,9 @@ class SettingsService {
     }
     if (settingsInstance.settingsKey == 'TheMovieDB API key') {
       validateTheMovieDbAPI(settingsInstance, resultValue)
+    }
+    if (settingsInstance.settingsKey == 'TheMovieDB API language') {
+      validateTheMovieDbLanguage(settingsInstance, resultValue)
     }
 
     return resultValue;
@@ -87,4 +119,13 @@ class SettingsService {
     }
   }
 
+  def validateTheMovieDbLanguage(Settings settingsInstance, resultValue) {
+    if (theMovieDbService.validateLanguage(settingsInstance.value)) {
+      resultValue.success = true;
+      resultValue.message = "The API-Language is valid and can be used!";
+    } else {
+      resultValue.error = true;
+      resultValue.message = "Invalid API language: The entered language is not an IETF language tag.";
+    }
+  }
 }
