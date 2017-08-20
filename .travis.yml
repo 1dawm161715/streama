@@ -6,7 +6,7 @@ sudo: required
 
 language: groovy
 
-services: docker
+#services: docker
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
